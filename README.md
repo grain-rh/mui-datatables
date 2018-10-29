@@ -66,7 +66,7 @@ const columns = [
    filter: true,
    sort: true,
   }
- },      
+ },
  {
   name: "Company",
   options: {
@@ -80,7 +80,7 @@ const columns = [
    filter: true,
    sort: false,
   }
- },  
+ },
  {
   name: "State",
   options: {
@@ -140,11 +140,13 @@ The component accepts the following props:
 |**`customToolbar`**|function||Render a custom toolbar
 |**`customToolbarSelect`**|function||Render a custom selected rows toolbar
 |**`customFooter`**|function||Render a custom table footer. `function(count, page, rowsPerPage, changeRowsPerPage, changePage) => string`&#124;` React Component`
+|**`customSort`**|function||Override default sorting with custom function. `function(data: array, colIndex: number, order: string) => array`
 |**`caseSensitive `**|boolean|false|Enable/disable case sensitivity for search
 |**`responsive`**|string|'stacked'|Enable/disable responsive table views. Options: 'stacked', 'scroll'
 |**`rowsPerPage`**|number|10|Number of rows allowed per page
 |**`rowsPerPageOptions`**|array|[10,15,20]|Options to provide in pagination for number of rows a user can select
 |**`rowHover`**|boolean|true|Enable/disable hover style over rows
+|**`fixedHeader`**|boolean|true|Enable/disable fixed header columns
 |**`sortFilterList`**|boolean|true|Enable/disable alphanumeric sorting of filter lists
 |**`sort`**|boolean|true|Enable/disable sort on all columns
 |**`filter`**|boolean|true|Show/hide filter icon from toolbar
@@ -156,14 +158,14 @@ The component accepts the following props:
 |**`onRowsSelect`**|function||Callback function that triggers when row(s) are selected. `function(currentRowsSelected: array, allRowsSelected: array) => void`
 |**`onRowsDelete`**|function||Callback function that triggers when row(s) are deleted. `function(rowsDeleted: array) => void`
 |**`onRowClick`**|function||Callback function that triggers when a row is clicked. `function(rowData: string[], rowMeta: { dataIndex: number, rowIndex: number }) => void`
-|**`onCellClick`**|function||Callback function that triggers when a cell is clicked. `function(colIndex: number, rowIndex: number) => void`
+|**`onCellClick`**|function||Callback function that triggers when a cell is clicked. `function(colData: any, cellMeta: { colIndex: number, rowIndex: number }) => void`
 |**`onChangePage`**|function||Callback function that triggers when a page has changed. `function(currentPage: number) => void`
 |**`onChangeRowsPerPage`**|function||Callback function that triggers when the number of rows per page has changed. `function(numberOfRows: number) => void`
 |**`onSearchChange`**|function||Callback function that triggers when the search text value has changed. `function(searchText: string) => void`
 |**`onFilterChange`**|function||Callback function that triggers when filters have changed. `function(changedColumn: string, filterList: array) => void`
 |**`onColumnSortChange`**|function||Callback function that triggers when a column has been sorted. `function(changedColumn: string, direction: string) => void`
 |**`onColumnViewChange`**|function||Callback function that triggers when a column view has been changed. `function(changedColumn: string, action: string) => void`
-|**`onServerRequest`**|function||Callback function that triggers when the 'serverSide' option is enabled and table state has changed. `function(action: string, tableState: object) => void`
+|**`onTableChange`**|function||Callback function that triggers when table state has changed. `function(action: string, tableState: object) => void`
 
 
 ## Customize Columns
@@ -180,7 +182,7 @@ const columns = [
   }
  },
  ...
-];  
+];
 ```
 
 #### Column:
@@ -202,7 +204,7 @@ const columns = [
 
 `customHeadRender` is called with these arguments:
 
-```
+```js
 function(columnMeta: {
   display: enum('true', 'false', 'excluded'),
   filter: bool,
@@ -214,7 +216,7 @@ function(columnMeta: {
 
 `customBodyRender` is called with these arguments:
 
-```
+```js
 function(value: any, tableMeta: {
   rowIndex: number,
   columnIndex: number,
@@ -274,10 +276,10 @@ class BodyCellExample extends React.Component {
 
 If you are looking to work with remote data sets or handle pagination, filtering, and sorting on a remote server you can do that with the following options:
 
-```
+```js
 const options = {
   serverSide: true,
-  onServerRequest: (action, tableState) => {
+  onTableChange: (action, tableState) => {
     this.xhrRequest('my.api.com/tableData', result => {
       this.setState({ data: result });
     });
@@ -291,7 +293,7 @@ To see an example **[Click Here](https://github.com/gregnb/mui-datatables/blob/m
 
 This package decided that the cost of bringing in another library to perform localizations would be too expensive. Instead the ability to override all text labels (which aren't many) is offered through the options property `textLabels`.  The available strings:
 
-```
+```js
 const options = {
   ...
   textLabels: {

@@ -84,7 +84,7 @@ class MUIDataTableToolbar extends React.Component {
   };
 
   handleCSVDownload = () => {
-    const { data, columns, options } = this.props;
+    const { displayData, columns, options } = this.props;
 
     const CSVHead =
       columns
@@ -95,7 +95,7 @@ class MUIDataTableToolbar extends React.Component {
         )
         .slice(0, -1) + "\r\n";
 
-    const CSVBody = data
+    const CSVBody = displayData
       .reduce(
         (soFar, row) =>
           soFar +
@@ -111,17 +111,22 @@ class MUIDataTableToolbar extends React.Component {
     /* taken from react-csv */
     const csv = `${CSVHead}${CSVBody}`;
     const blob = new Blob([csv], { type: "text/csv" });
-    const dataURI = `data:text/csv;charset=utf-8,${csv}`;
 
-    const URL = window.URL || window.webkitURL;
-    const downloadURI = typeof URL.createObjectURL === "undefined" ? dataURI : URL.createObjectURL(blob);
+    if (navigator && navigator.msSaveOrOpenBlob) {
+      navigator.msSaveOrOpenBlob(blob, options.downloadOptions.filename);
+    } else {
+      const dataURI = `data:text/csv;charset=utf-8,${csv}`;
 
-    let link = document.createElement("a");
-    link.setAttribute("href", downloadURI);
-    link.setAttribute("download", options.downloadOptions.filename);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+      const URL = window.URL || window.webkitURL;
+      const downloadURI = typeof URL.createObjectURL === "undefined" ? dataURI : URL.createObjectURL(blob);
+
+      let link = document.createElement("a");
+      link.setAttribute("href", downloadURI);
+      link.setAttribute("download", options.downloadOptions.filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
   setActiveIcon = iconName => {
